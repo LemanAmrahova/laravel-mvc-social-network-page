@@ -20,9 +20,9 @@ class LoginregisterController extends Controller
     public function registerPost(Request $request){
 
         $request->validate([
-            "name"=>"required|min:3",
-            "email"=>"required|min:3",
-            "password"=>"required|min:3"
+            "name"=>"required|min:3|max:255",
+            "email"=>"required|min:3|max:255",
+            "password"=>"required|min:3|max:255"
         ]);
 
         $user = new User();

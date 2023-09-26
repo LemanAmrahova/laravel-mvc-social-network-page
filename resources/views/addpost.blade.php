@@ -19,7 +19,6 @@
                                 <input type="hidden" name="id" value="{{ $post->id }}">
                             @endif
 
-                            <input type="hidden" name="user_id" value="{{ auth()->id() }}">
 
                             <div class="form-group">
                                 <label for="title">Title</label>

@@ -33,7 +33,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Post::class, 'likes', 'user_id', 'post_id')->withTimestamps();
     }
     
-
+    public function companies()
+    {
+        return $this->hasMany(Company::class);
+    }
 
     protected $fillable = [
         'name',
