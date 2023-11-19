@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration</title>
-    <link rel="stylesheet" href="{{ asset('css/registration.css') }}">
+    <title>Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.0/anime.min.js"></script>
     <style>
         @import url('https://rsms.me/inter/inter-ui.css');
 
@@ -119,7 +119,7 @@
 
         path {
             fill: none;
-            stroke: url(#linearGradient);
+            stroke: url(#linearGradient);;
             stroke-width: 4;
             stroke-dasharray: 240 1386;
         }
@@ -155,7 +155,7 @@
 
         #submit {
             color: #707075;
-            margin-top: 7px;
+            margin-top: 27px;
             transition: color 300ms;
         }
 
@@ -170,32 +170,35 @@
     </style>
 </head>
 <body>
-    <div class="page">
-        <div class="container">
-            <div class="left">
-                <div class="login">Register</div>
-                <div class="eula">By registering, you agree to the terms and conditions.</div>
+<div class="page">
+    <div class="container">
+        <div class="left">
+            <div class="login">Login</div>
+            <div class="eula">By logging in you agree to the ridiculously long terms that you didn't bother to read
             </div>
-            <div class="right">
-                <div class="form">
-                    <form method="POST" action="{{ route('register') }}">
-                        @csrf
-
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name">
-
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email">
-
-                        <label for="password">Password</label>
-                        <input type="password" id="password" name="password">
-
-                        <input type="submit" id="submit" value="Register">
-                    </form>
-                    
+        </div>
+        <div class="right">
+            @if(Session::has('success'))
+                <div class="alert alert-success" role="alert">
+                    {{ Session::get('success') }}
                 </div>
+            @endif
+            <div class="form">
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+
+                    <input type="submit" id="submit" value="Login">
+                </form>
+                <p>Don't have any account? <a href="{{ route('register') }}">Register</a></p>
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

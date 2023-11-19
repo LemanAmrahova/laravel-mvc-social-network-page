@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use  App\Models\Post;
-use  App\Models\Comment;
+use App\Models\Post;
+use Illuminate\Routing\Controller;
 
 class LikeController extends Controller
 {
-    public function like(Post $post)
+    public function store(Post $post)
     {
         $user = auth()->user();
 

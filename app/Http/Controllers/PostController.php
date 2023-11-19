@@ -2,96 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\StorePostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
-use App\Models\Comment;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class PostController extends Controller
 {
 
-    public function addpostGet()
+    public function create()
     {
-            return view('addpost');
+        return view('Post.addpost');
     }
 
-    public function edit($id){
+    public function edit($id)
+    {
 
         $post = Post::find($id);
         if (!$post) {
-            return redirect()->route('myposts')->with('error', 'Post not found.');
+            return redirect()->route('posts.myposts')->with('error', 'Post not found.');
         }
 
-        return view('addpost', compact('post'));
+        return view('Post.addpost', compact('post'));
     }
 
-    public function addpost(Request $request)
+    public function store(StorePostRequest $request)
     {
-        $validatedData = $request->validate([
-            'title' => 'required|max:255',
-            'content' => 'required|min:20|max:1000',
-            'publish_date' => 'required|date',
-        ]);
+        $validatedData = $request->validated();
+        $validatedData['user_id'] = auth()->user()->id;
 
+        Post::create($validatedData);
 
-        $post = new Post();
-        $post->id = $request->input('id');
-        $post->title = $validatedData['title'];
-        $post->content = $validatedData['content'];
-        $post->publish_date = $validatedData['publish_date'];
-        $post->user_id = auth()->user()->id;
-        $post->save();
-
-        return redirect()->route('posts');
+        return redirect()->route('posts.index')->with('success', 'Post created successfully!');;
     }
 
-    public function editpost(Request $request, $id){
-
-        $request->validate([
-            'title' => 'required|max:255',
-            'content' => 'required|min:20|max:1000',
-            'publish_date' => 'required|date',
-            'user_id'=> 'required',
-        ]);
-        
+    public function update(UpdatePostRequest $request, $id)
+    {
         $post = Post::findOrFail($id);
-        if($post->user_id == auth()->id()){
-            
-        
         if (!$post) {
-            return redirect()->route('myposts')->with('error', 'Post not found.');
+            return redirect()->route('posts.myposts')->with('error', 'Post not found.');
         }
 
-        $post->title = $request->input('title');
-        $post->content = $request->input('content');
-        $post->publish_date = $request->input('publish_date');
-        $post->save();
+        if ($post->user_id == auth()->id()) {
+            $validatedData = $request->validated();
 
-        return redirect()->route('myposts')->with('success', 'Post updated successfully.');
+            $post->title = $validatedData['title'];
+            $post->content = $validatedData['content'];
+            $post->publish_date = $validatedData['publish_date'];
+            $post->save();
+
+            return redirect()->route('posts.myposts')->with('success', 'Post updated successfully.');
+        } else {
+            return redirect()->route('posts.myposts')->with('error', 'Unauthorized action.');
         }
     }
 
-    public function posts()
+    public function index()
     {
         $posts = Post::where('is_deleted', false)
-        ->orderBy('publish_date', 'desc')
-        ->get();
+            ->orderBy('publish_date', 'desc')
+            ->get();
 
-        return view('posts', compact('posts'));
+        return view('Post.posts', compact('posts'));
     }
 
-    public function postdetails(){
-        return view('postdetails');
-    }
+//    public function postdetails(){
+//        return view('Post.postdetails');
+//    }
 
-    
     public function myposts()
     {
         $posts = Post::where('is_deleted', false)
-        ->where('user_id', auth()->id())
-        ->orderBy('publish_date', 'desc')
-        ->get();
+            ->where('user_id', auth()->id())
+            ->orderBy('publish_date', 'desc')
+            ->get();
 
-        return view('myposts', compact('posts'));
+        return view('Post.myposts', compact('posts'));
     }
 
     public function delete($id)
@@ -99,13 +86,13 @@ class PostController extends Controller
         $post = Post::findOrFail($id);
 
         if (!$post) {
-            return redirect()->route('myposts')->with('error', 'Post not found.');
+            return redirect()->route('posts.myposts')->with('error', 'Post not found.');
         }
-    
+
         $post->update(['is_deleted' => true]);
-    
-        return redirect()->route('myposts')->with('success', 'Post deleted successfully.');
-    
+
+        return redirect()->route('posts.myposts')->with('success', 'Post deleted successfully.');
+
     }
 
 }

@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use  App\Models\Company;
 use App\Http\Requests\StoreCompanyRequest;
+use App\Models\Company;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class CompanyController extends Controller
 {
-    public function show(){
-        return view('addcompany');
+    public function create(){
+        return view('Company.addcompany');
     }
 
-    public function store(Request $request){
+    public function store(StoreCompanyRequest $request){
 
         $company = new Company([
             'name' => $request->input('name'),
@@ -21,13 +22,13 @@ class CompanyController extends Controller
 
         $company->save();
 
-        return redirect()->route('companies')->with('success', 'Company created successfully!');
+        return redirect()->route('companies.index')->with('success', 'Company created successfully!');
 
     }
 
     public function index(){
         $companies = Company::all();
-        return view('companies', compact('companies'));
+        return view('Company.companies', compact('companies'));
     }
 
 

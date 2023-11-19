@@ -2,34 +2,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreAnnouncementRequest;
+use App\Models\Announcement;
 use Illuminate\Http\Request;
-use  App\Models\Announcement;
-use  App\Models\Company;
+use Illuminate\Routing\Controller;
 
 class AnnouncementController extends Controller
 {
     public function create()
     {
-        $companies = Company::all();
-        return view('addannouncement', compact('companies'));
+        $companies = auth()->user()->companies;
+        return view('Announcement.addannouncement', compact('companies'));
     }
 
-    public function store(Request $request)
+    public function store(StoreAnnouncementRequest $request)
     {
-        $validatedData = $request->validate([
-            'company_id' => 'required|exists:companies,id',
-            'title' => 'required|max:255',
-        ]);
-
-        $announcement = new Announcement($validatedData);
+        $announcement = new Announcement($request->validated());
         $announcement->save();
 
-        return redirect()->route('announcements')->with('success', 'Announcement created successfully!');
+        return redirect()->route('announcements.index')->with('success', 'Announcement created successfully!');
     }
 
     public function index(){
         $announcements = Announcement::with('company', 'appeals')->get();
-        return view('announcements', compact('announcements'));
+        return view('Announcement.announcements', compact('announcements'));
     }
 
 

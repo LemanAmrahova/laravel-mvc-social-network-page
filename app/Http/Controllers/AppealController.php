@@ -2,30 +2,29 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Appeal;
 use App\Models\Announcement;
+use App\Models\Appeal;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 
 class AppealController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth')->except('index'); 
+        $this->middleware('auth')->except('index');
     }
-
-    
 
     public function create($announcement_id)
     {
         $announcement = Announcement::findOrFail($announcement_id);
-        return view('appeals', compact('announcement'));
+        return view('Appeal.appeals', compact('announcement'));
     }
 
     public function store(Request $request)
     {
         $appeal = new Appeal();
 
-        $appeal->user_id = auth()->user()->id; 
+        $appeal->user_id = auth()->user()->id;
         $appeal->announcement_id = $request->input('announcement_id');
 
         $user = auth()->user();
@@ -40,7 +39,7 @@ class AppealController extends Controller
 
         $appeal->save();
 
-        return redirect()->route('announcements')->with('success', 'Appeal created successfully!');
+        return redirect()->route('announcements.index')->with('success', 'Appeal created successfully!');
     }
 
     public function index($announcement_id)
@@ -48,24 +47,23 @@ class AppealController extends Controller
         $announcement = Announcement::findOrFail($announcement_id);
         $appeals = $announcement->appeals;
 
-        return view('appeals', compact('announcement', 'appeals'));
+        return view('Appeal.appeals', compact('announcement', 'appeals'));
     }
 
     public function accept($id)
     {
         $appeal = Appeal::findOrFail($id);
-    
+
         $this->authorize('accept', $appeal);
-    
+
     }
-    
+
     public function decline($id)
     {
         $appeal = Appeal::findOrFail($id);
-    
+
         $this->authorize('decline', $appeal);
-    
+
     }
-    
 
 }
